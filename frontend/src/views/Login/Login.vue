@@ -8,14 +8,14 @@
             </template>
             <el-form :model="loginFormState" :rules="rules" ref="loginFormRef">
                 <el-form-item prop="name">
-                    <el-input v-model.trim="loginFormState.name" maxlength="32" placeholder="请输入账号" clearable>
+                    <el-input  v-model.trim="loginFormState.name" maxlength="32" placeholder="请输入账号" clearable>
                         <template #prefix>
                             <icons name="User"></icons>
                         </template>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="pwd">
-                    <el-input v-model.trim="loginFormState.pwd" maxlength="16" show-password placeholder="请输入密码" clearable
+                    <el-input  v-model.trim="loginFormState.pwd" maxlength="16" show-password placeholder="请输入密码" clearable
                         @keyup.enter.exact="handleLogin">
                         <template #prefix>
                             <icons name="Lock"></icons>
@@ -23,7 +23,7 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" style="width: 100%" :loading="loginFormState.loading" @click="handleLogin">登
+                    <el-button :disabled=" loginFormState.name==='' || loginFormState.pwd==='' " type="primary" style="width: 100%" :loading="loginFormState.loading" @click="handleLogin">登
                         录</el-button>
                 </el-form-item>
             </el-form>
@@ -40,6 +40,7 @@ import request from "@/utils/axios";
 import { ElMessage } from "element-plus";
 
 export default {
+   
     components: { Icons },
     setup() {
         const router = useRouter();
@@ -76,7 +77,8 @@ export default {
                         ElMessage.success(res.data.message);
                         router.replace("/");
                     } else {
-                        ElMessage.error(res.data.code + "：" + res.data.message);
+                       // ElMessage.error(res.data.code + "：" + res.data.message);
+                       ElMessage.error("登录失败，请检查用户名和密码。");
                     }
                     loginFormState.loading = false;
                 }).catch(err => {
@@ -96,7 +98,7 @@ export default {
 .login {
     width: 100vw;
     height: 100vh;
-    background-image: url("../../assets/img/login.png");
+    // background-image: url("../../assets/img/login.png");
     background-size: cover;
     display: flex;
     justify-content: center;
@@ -104,13 +106,67 @@ export default {
     overflow: hidden;
 
     .login_center {
-        width: 396px;
-        height: auto;
-    }
-
-    .card_header {
-        font-size: 18px;
+        width: 300px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         text-align: center;
+        transition: transform 0.3s ease-in-out; 
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        .card_header {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .el-input {
+            width: 100%;
+            height: 45px;    
+            margin-bottom: 20px;
+           
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+
+        .el-button {
+            width: 100%;
+            height:45px;
+            background-color: #0056b3; 
+            border-color: #0056b3;
+            color: #d8e1e8; 
+            font-weight: bold;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s ease-in-out;
+           
+            &:disabled{
+                background-color: #abadb0; 
+                border-color: #abadb0;
+                color: white;
+            }
+            &:not(:disabled):hover {
+                background-color: #004080; 
+                border-color: #004080;
+                transform: scale(1.05);
+            }
+        }
+
+        .el-alert {
+            margin-top: 20px;
+            border-radius: 4px;
+            background-color: #ff3b30;
+            color: #fff;
+            border-color: #ff3b30;
+        }
     }
 }
+
+
 </style>
