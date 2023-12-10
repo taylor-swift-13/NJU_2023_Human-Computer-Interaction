@@ -4,14 +4,14 @@
             <div class="card_header">
                 <b>贷款</b>
                 <div>
-                    <el-button color="#056DE8" @click="searchDialogFormVisible = true">搜索</el-button>
-                    <el-button color="#87CEEB" @click="addDialogFormVisible = true">借贷</el-button>
+                    <el-button color="#3388BB" @click="searchDialogFormVisible = true">搜索</el-button>
+                    <el-button class="vice_button" @click="addDialogFormVisible = true">借贷</el-button>
                 </div>
             </div>
         </template>
         <!-- <el-empty description="暂无数据"></el-empty> -->
 
-        <el-table :data="tableData" stripe style="width: 100%">
+        <el-table :data="tableData" stripe style="width: 100%" >
             <el-table-column prop="loan_id" label="贷款ID"></el-table-column>
             <el-table-column prop="client_id"  label="客户身份证号" width="200"></el-table-column>
             <el-table-column prop="bank_name" label="支行名称"></el-table-column>
@@ -19,6 +19,11 @@
             <el-table-column prop="remain_loan" label="剩余贷款"></el-table-column>
             <el-table-column prop="loan_date" label="借贷时间"></el-table-column>
             <el-table-column prop="loan_rate" label="利率"></el-table-column>
+            <el-table-column fixed="right" label="操作" >
+            <template #default="scope">
+                <el-button type='primary' size="small" @click="prePay(scope.row.loan_id)">还贷</el-button>
+            </template>       
+            </el-table-column>
         </el-table>
 
         <div style="padding: 10px 0">
@@ -45,7 +50,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleAdd()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -77,7 +82,26 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="searchDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleSearch()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSearch()">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+
+        
+        <el-dialog v-model="payDialogFormVisible" title="还贷">
+            <el-form :model="payForm">
+                  <el-form-item label="贷款ID" label-width=100px>
+                    <el-input v-model="payForm.loan_id" disabled autocomplete="off" />
+                </el-form-item>
+                <el-form-item label="支付金额" label-width=100px>
+                    <el-input v-model="payForm.pay_money" autocomplete="off" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="payDialogFormVisible = false">取消</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handlePay()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -95,6 +119,7 @@ export default {
         const tableData = ref([])
         const addDialogFormVisible = ref(false);
         const searchDialogFormVisible = ref(false);
+        const payDialogFormVisible =ref(false);
         const addForm = reactive({
             loan_id: "",
             client_id: "",
@@ -113,10 +138,17 @@ export default {
             loan_date: "",
             loan_rate: "",
         });
+        const payForm = reactive({
+            pay_id: "",
+            loan_id: "",
+            pay_money: "",
+            pay_date: "",
+        });
         const currentPage = ref(1);
         const pageSize = ref(2);
         const count = ref(0);
         const baseurl = "/loan";
+        const payurl = "/payStatus";
 
         const load = () => {
             request({ url: baseurl + "/page", method: "post", params: { page: currentPage.value, size: pageSize.value }, data: searchForm }).then(res => {
@@ -131,9 +163,34 @@ export default {
             });
         };
 
+
         onMounted(() => {
             load();
         });
+
+         const prePay = (loan_id) => {
+            payForm.loan_id=loan_id;
+            payDialogFormVisible.value=true;
+        };
+
+
+        const handlePay = () => {
+            request.post(payurl + "/add", payForm).then(res => {
+                load();
+                if (res.data.code == 200) {
+                    ElMessage.success(res.data.message);
+                } else {
+                    ElMessage.error(res.data.code + "：" + res.data.message);
+                }
+            }).catch(err => {
+                ElMessage.error(err);
+            });
+            payDialogFormVisible.value = false;
+            Object.keys(payForm).forEach(key => {
+                payForm[key] = "";
+            });
+        };
+
 
         const handleSizeChange = (number) => {
             pageSize.value = number;
@@ -173,8 +230,10 @@ export default {
             tableData,
             addDialogFormVisible,
             searchDialogFormVisible,
+            payDialogFormVisible,
             addForm,
             searchForm,
+            payForm,
             currentPage,
             pageSize,
             count,
@@ -182,6 +241,8 @@ export default {
             handleCurrentChange,
             handleAdd,
             handleSearch,
+            handlePay,
+            prePay,
         };
     }
 }
@@ -193,4 +254,14 @@ export default {
     align-items: center;
     justify-content: space-between;
 }
+.vice_button{
+   color: #fff ;
+   background-color: #77BBDD;
+}
+
+.vice_button:hover{
+   color: #fff ;
+   background-color: #88BBDD;
+}
+
 </style>

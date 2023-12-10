@@ -4,10 +4,11 @@
             <div class="card_header">
                 <b>信用账户</b>
                 <div>
-                    <el-button color="#056DE8" @click="addDialogFormVisible = true">增加</el-button>
-                    <el-button color="#056DE8" @click="searchDialogFormVisible = true">搜索</el-button>
-                    <el-button color="#87CEEB" @click="returnDialogFormVisible = true" >还款</el-button>
-                    <el-button color="#87CEEB" @click="lendDialogFormVisible = true" >使用</el-button>
+                    <el-button color="#3388BB" @click="addDialogFormVisible = true">增加</el-button>
+                    <el-button color="#3388BB" @click="searchDialogFormVisible = true">搜索</el-button>
+                    <el-button color="#3388BB" @click="preSelect()">筛选</el-button>
+                    <el-button class="vice_button" @click="returnDialogFormVisible = true" >还款</el-button>
+                    <el-button class="vice_button" @click="lendDialogFormVisible = true" >使用</el-button>
                 </div>
             </div>
         </template>
@@ -59,7 +60,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                    <el-button  color="#3388BB" type="primary" @click="handleAdd()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -75,12 +76,6 @@
                 <el-form-item label="支行名称" label-width=100px>
                     <el-input v-model="searchForm.bank_name" autocomplete="off" />
                 </el-form-item>
-                <el-form-item label="密码" label-width=100px>
-                    <el-input v-model="searchForm.password" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="余额" label-width=100px>
-                    <el-input v-model="searchForm.remaining" autocomplete="off" />
-                </el-form-item>
                 <el-form-item label="开户日期" label-width=100px>
                     <el-input v-model="searchForm.open_date" autocomplete="off" />
                 </el-form-item>
@@ -91,7 +86,28 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="searchDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleSearch()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSearch()">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+         <el-dialog v-model="selectDialogFormVisible" title="筛选">
+            <el-form :model="searchForm">
+                <el-form-item label="支行名称" label-width=100px>
+                    <el-select v-model="searchForm.bank_name" >
+                      <el-option v-for="bank_name in uniqueBankName" :key="bank_name" :label="bank_name" :value="bank_name"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="额度" label-width=100px>
+                  <el-select v-model="searchForm.overdraft" >
+                    <el-option v-for="overdraft in uniqueOverdraft" :key="overdraft" :label="overdraft" :value="overdraft"></el-option>
+                  </el-select>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                     <el-button @click="cleanSelect()">重置</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSelect()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -108,7 +124,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="returnDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleReturn()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleReturn()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -125,7 +141,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="lendDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleLend()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleLend()" >确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -141,11 +157,13 @@ import { ElMessage } from "element-plus";
 
 export default {
     setup() {
-        const tableData = ref([])
+        const tableData = ref([]);
+        const fullData =ref([]);
         const addDialogFormVisible = ref(false);
         const searchDialogFormVisible = ref(false);
         const returnDialogFormVisible = ref(false);
         const lendDialogFormVisible = ref(false);
+        const selectDialogFormVisible =ref(false);
         const addForm = reactive({
             account_id: "",
             client_id: "",
@@ -172,6 +190,8 @@ export default {
         const pageSize = ref(2);
         const count = ref(0);
         const baseurl = "/creditAccount";
+        const uniqueBankName =ref([]);
+        const uniqueOverdraft =ref([]);
 
         const load = () => {
             request({ url: baseurl + "/page", method: "post", params: { page: currentPage.value, size: pageSize.value }, data: searchForm }).then(res => {
@@ -186,9 +206,28 @@ export default {
             });
         };
 
+        const initData = () => {
+            request({ url: baseurl + "/page", method: "post", params: { page: 1, size: 1000 }, data: searchForm }).then(res => {
+                if (res.data.code == 200) {
+                    fullData.value = res.data.data.data;
+                } else {
+                    ElMessage.error(res.data.code + "：" + res.data.message);
+                }
+            }).catch(err => {
+                ElMessage.error(err);
+            });
+        };
+
         onMounted(() => {
+            initData();
             load();
         });
+        
+         const preSelect =() =>{
+            selectDialogFormVisible.value = true;
+            uniqueBankName.value= Array.from(new Set(fullData._rawValue.map(item => item.bank_name)));
+            uniqueOverdraft.value= Array.from(new Set(fullData._rawValue.map(item => item.overdraft)));
+       }
 
         const handleEdit = (data) => {
             request.post(baseurl + "/edit", data).then(res => {
@@ -216,6 +255,19 @@ export default {
                 ElMessage.error(err);
             });
         };
+
+          //用于筛选
+       const handleSelect =() =>{
+            load ();
+            selectDialogFormVisible.value = false;     
+       };
+
+       //重置筛选结果
+       const cleanSelect =() =>{
+            Object.keys(searchForm).forEach(key => {
+                searchForm[key] = "";
+            });
+       };
 
         const handleSizeChange = (number) => {
             pageSize.value = number;
@@ -292,12 +344,15 @@ export default {
             searchDialogFormVisible,
             returnDialogFormVisible,
             lendDialogFormVisible,
+            selectDialogFormVisible,
             addForm,
             searchForm,
             interactForm,
             currentPage,
             pageSize,
             count,
+            uniqueBankName,
+            uniqueOverdraft,
             handleEdit,
             handleDelete,
             handleSizeChange,
@@ -306,6 +361,10 @@ export default {
             handleSearch,
             handleReturn,
             handleLend,
+            initData,
+            handleSelect,
+            cleanSelect,
+            preSelect
         };
     }
 }
@@ -316,5 +375,14 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+.vice_button{
+   color: #fff ;
+   background-color: #77BBDD;
+}
+
+.vice_button:hover{
+   color: #fff ;
+   background-color: #88BBDD;
 }
 </style>

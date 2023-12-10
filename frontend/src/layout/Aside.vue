@@ -1,8 +1,12 @@
 <template>
     <el-aside :width="isCollapse ? `64px` : `200px`">
+        <el-tooltip content="返回主页" placement="right">
         <div class="logo">
-            <img :src="avatar" alt="logo" draggable="false" />
+            <router-link to="/"> <!-- Use the path for the main page route -->
+                 <img :src="avatar" alt="logo" draggable="false" />
+             </router-link>
         </div>
+        </el-tooltip>
         <el-menu background-color="#001529" text-color="#eee" active-text-color="#fff" router unique-opened
             :default-active="route.path" :collapse="isCollapse">
             <template v-for="item in routers" :key="item.name">
@@ -70,6 +74,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 @mixin noScrollBar {
     overflow: hidden;
     overflow-y: scroll;
@@ -101,7 +106,8 @@ export default {
     display: flex;
     display: -webkit-flex;
     flex-direction: column;
-    background-color: #001529;
+    //background-color: #001529;
+    background-color: #3388BB;
     overflow: hidden;
     transition: width 0.3s ease-in-out;
     -moz-transition: width 0.3s ease-in-out;
@@ -160,6 +166,6 @@ export default {
 /* 激活选中菜单 */
 .el-menu-item.is-active,
 .el-menu--popup .el-menu-item.is-active {
-    background-color: #1890ff !important;
+    background-color: rgb(62, 83, 118) !important;
 }
 </style>

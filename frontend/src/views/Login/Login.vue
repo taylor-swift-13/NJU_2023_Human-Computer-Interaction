@@ -1,4 +1,5 @@
 <template>
+ <div class="container">
     <div class="login">
         <el-card class="login_center">
             <template #header>
@@ -29,6 +30,7 @@
             </el-form>
         </el-card>
     </div>
+ </div>
 </template>
 
 <script>
@@ -95,24 +97,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.container{
+    background-image: url("../../assets/img/login_final.png");
+     background-size: 109%; 
+    background-repeat: no-repeat; 
+}
+
 .login {
     width: 100vw;
     height: 100vh;
-    // background-image: url("../../assets/img/login.png");
     background-size: cover;
     display: flex;
-    justify-content: center;
+    justify-content:center;
     align-items: center;
     overflow: hidden;
+    transform: translateX(25%); 
+    
 
     .login_center {
         width: 300px;
         padding: 20px;
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: rgba(255, 255, 255, 0.8);
         border-radius: 8px;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         text-align: center;
         transition: transform 0.3s ease-in-out; 
+        
 
         &:hover {
             transform: scale(1.05);
@@ -125,10 +135,13 @@ export default {
             font-weight: bold;
         }
 
+        .el-input__wrapper{
+            margin-bottom:10px;
+        }
         .el-input {
             width: 100%;
             height: 45px;    
-            margin-bottom: 20px;
+            margin-bottom: 5px;
            
             &:hover {
                 transform: scale(1.05);
@@ -138,8 +151,8 @@ export default {
         .el-button {
             width: 100%;
             height:45px;
-            background-color: #0056b3; 
-            border-color: #0056b3;
+            background-color: #3388BB; 
+            border-color: #3388BB;
             color: #d8e1e8; 
             font-weight: bold;
             border-radius: 4px;
@@ -147,8 +160,8 @@ export default {
             transition: background-color 0.3s ease-in-out;
            
             &:disabled{
-                background-color: #abadb0; 
-                border-color: #abadb0;
+                background-color: rgba(0, 0, 0, 0.3); 
+                border-color: rgba(0, 0, 0, 0.3);
                 color: white;
             }
             &:not(:disabled):hover {

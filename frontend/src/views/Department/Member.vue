@@ -4,8 +4,9 @@
             <div class="card_header">
                 <b>员工</b>
                 <div>
-                    <el-button color="#056DE8" @click="addDialogFormVisible = true">增加</el-button>
-                    <el-button color="#056DE8" @click="searchDialogFormVisible = true">搜索</el-button>
+                    <el-button color="#3388BB" @click="addDialogFormVisible = true">增加</el-button>
+                    <el-button color="#3388BB" @click="searchDialogFormVisible = true">搜索</el-button>
+                    <el-button color="#3388BB" @click="preSelect()">筛选</el-button>
                 </div>
             </div>
         </template>
@@ -81,7 +82,7 @@
 
         <el-dialog v-model="addDialogFormVisible" title="增加">
             <el-form :model="addForm">
-                <el-form-item label="部门号" label-width=100px>
+                <el-form-item label="所属部门号" label-width=100px>
                     <el-input v-model="addForm.dep_depart_no" autocomplete="off" />
                 </el-form-item>
                 <el-form-item label="支行名称" label-width=100px>
@@ -106,7 +107,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleAdd()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -116,44 +117,53 @@
                 <el-form-item label="员工号" label-width=100px>
                     <el-input v-model="searchForm.id" autocomplete="off" />
                 </el-form-item>
-                <el-form-item label="管理部门号" label-width=100px>
-                    <el-input v-model="searchForm.depart_no" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="部门号" label-width=100px>
-                    <el-input v-model="searchForm.dep_depart_no" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="支行名称" label-width=100px>
-                    <el-input v-model="searchForm.bank_name" autocomplete="off" />
-                </el-form-item>
                 <el-form-item label="员工姓名" label-width=100px>
                     <el-input v-model="searchForm.name" autocomplete="off" />
                 </el-form-item>
-                <el-form-item label="员工性别" label-width=100px>
-                    <el-input v-model="searchForm.sex" autocomplete="off" />
-                </el-form-item>
                 <el-form-item label="身份证号" label-width=100px>
                     <el-input v-model="searchForm.person_id" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="手机号" label-width=100px>
-                    <el-input v-model="searchForm.phone" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="住址" label-width=100px>
-                    <el-input v-model="searchForm.address" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="工资" label-width=100px>
-                    <el-input v-model="searchForm.salary" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="入职时间" label-width=100px>
-                    <el-input v-model="searchForm.begin_date" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="等级" label-width=100px>
-                    <el-input v-model="searchForm.level" autocomplete="off" />
                 </el-form-item>
             </el-form>
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="searchDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleSearch()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSearch()">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+         <el-dialog v-model="selectDialogFormVisible" title="筛选">
+            <el-form :model="searchForm">
+                <el-form-item label="管理部门号" label-width=100px>
+                     <el-select v-model="searchForm.depart_no" >
+                        <el-option v-for="depart_no in uniqueDepNo" :key="depart_no" :label="depart_no" :value="depart_no"></el-option>
+                    </el-select>  
+                </el-form-item>
+                <el-form-item label="所属部门号" label-width=100px>
+                     <el-select v-model="searchForm.dep_depart_no" >
+                        <el-option v-for="dep_depart_no in uniqueDDepNo" :key="dep_depart_no" :label="dep_depart_no" :value="dep_depart_no"></el-option>
+                    </el-select>  
+                </el-form-item>
+                <el-form-item label="支行名称" label-width=100px>
+                    <el-select v-model="searchForm.bank_name" >
+                        <el-option v-for="bank_name in uniqueBankName" :key="bank_name" :label="bank_name" :value="bank_name"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="员工性别" label-width=100px>
+                    <el-select v-model="searchForm.sex" >
+                        <el-option v-for="sex in uniqueSex" :key="sex" :label="sex" :value="sex"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="等级" label-width=100px>
+                    <el-select v-model="searchForm.level" >
+                        <el-option v-for="level in uniqueLevel" :key="level" :label="level" :value="level"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button  @click="cleanSelect()">重置</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSelect()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -168,9 +178,11 @@ import { ElMessage } from "element-plus";
 
 export default {
     setup() {
-        const tableData = ref([])
+        const tableData = ref([]);
+        const fullData =ref([]);
         const addDialogFormVisible = ref(false);
         const searchDialogFormVisible = ref(false);
+        const selectDialogFormVisible =ref(false);
         const addForm = reactive({
             id: "",
             depart_no: "",
@@ -219,6 +231,12 @@ export default {
         const pageSize = ref(2);
         const count = ref(0);
         const baseurl = "/member";
+        //用于筛选
+        const uniqueDepNo =ref([]);
+        const uniqueLevel =ref([]);
+        const uniqueDDepNo =ref([]);
+        const uniqueBankName =ref([]);
+        const uniqueSex =ref([]);
 
         const load = () => {
             request({ url: baseurl + "/page", method: "post", params: { page: currentPage.value, size: pageSize.value }, data: searchForm }).then(res => {
@@ -232,8 +250,20 @@ export default {
                 ElMessage.error(err);
             });
         };
+        const initData = () =>{
+             request({ url: baseurl + "/page", method: "post", params: { page: 1, size:1000 }, data: searchForm }).then(res => {
+                if (res.data.code == 200) {
+                    fullData.value =res.data.data.data;
+                } else {
+                    ElMessage.error(res.data.code + "：" + res.data.message);
+                }
+            }).catch(err => {
+                ElMessage.error(err);
+            });
+        }
 
         onMounted(() => {
+            initData();
             load();
         });
 
@@ -290,6 +320,27 @@ export default {
                 addForm[key] = "";
             });
         };
+        const preSelect =() =>{
+            selectDialogFormVisible.value = true;
+            uniqueBankName.value= Array.from(new Set(fullData._rawValue.map(item => item.bank_name)));
+            uniqueDDepNo.value= Array.from(new Set(fullData._rawValue.map(item => item.dep_depart_no)));
+            uniqueDepNo.value=Array.from(new Set(fullData._rawValue.map(item => item.depart_no)));
+            uniqueLevel.value=Array.from(new Set(fullData._rawValue.map(item => item.level)));
+            uniqueSex.value=Array.from(new Set(fullData._rawValue.map(item => item.sex)));
+       }
+
+        //用于筛选
+       const handleSelect =() =>{
+            load ();
+            selectDialogFormVisible.value = false;     
+       }
+
+       //重置筛选结果
+       const cleanSelect =() =>{
+            Object.keys(searchForm).forEach(key => {
+                searchForm[key] = "";
+            });
+       }
 
         const handleSearch = () => {
             load();
@@ -302,18 +353,27 @@ export default {
             tableData,
             addDialogFormVisible,
             searchDialogFormVisible,
+            selectDialogFormVisible,
             addForm,
             searchForm,
             editForm,
             currentPage,
             pageSize,
             count,
+            uniqueBankName,
+            uniqueDDepNo,
+            uniqueDepNo,
+            uniqueLevel,
+            uniqueSex,
             handleEdit,
             handleDelete,
             handleSizeChange,
             handleCurrentChange,
             handleAdd,
             handleSearch,
+            handleSelect,
+            preSelect,
+            cleanSelect
         };
     }
 }

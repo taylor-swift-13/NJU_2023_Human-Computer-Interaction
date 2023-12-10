@@ -4,8 +4,8 @@
             <div class="card_header">
                 <b>客户</b>
                 <div>
-                    <el-button color="#056DE8" @click="addDialogFormVisible = true">增加</el-button>
-                    <el-button color="#056DE8" @click="searchDialogFormVisible = true">搜索</el-button>
+                    <el-button color="#3388BB" @click="addDialogFormVisible = true">增加</el-button>
+                    <el-button color="#3388BB" @click="searchDialogFormVisible = true">搜索</el-button>
                 </div>
             </div>
         </template>
@@ -72,7 +72,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleAdd()" >确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -98,7 +98,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="searchDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleSearch()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSearch()" >确定</el-button>
                 </span>
             </template>
         </el-dialog>

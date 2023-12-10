@@ -4,8 +4,8 @@
             <div class="card_header">
                 <b>支付情况</b>
                 <div>
-                    <el-button color="#056DE8" @click="searchDialogFormVisible = true">搜索</el-button>
-                    <el-button color="#87CEEB" @click="addDialogFormVisible = true">还贷</el-button>
+                    <el-button color="#3388BB" @click="searchDialogFormVisible = true">搜索</el-button>
+                    <el-button class="vice_button" @click="addDialogFormVisible = true">还贷</el-button>
                 </div>
             </div>
         </template>
@@ -36,7 +36,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleAdd()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -59,7 +59,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="searchDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleSearch()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSearch()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -168,5 +168,15 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.vice_button{
+   color: #fff ;
+   background-color: #77BBDD;
+}
+
+.vice_button:hover{
+   color: #fff ;
+   background-color: #88BBDD;
 }
 </style>

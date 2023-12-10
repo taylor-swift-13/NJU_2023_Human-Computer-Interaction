@@ -4,8 +4,9 @@
             <div class="card_header">
                 <b>支行管理</b>
                 <div>
-                    <el-button color="#056DE8" @click="addDialogFormVisible = true">增加</el-button>
-                    <el-button color="#056DE8" @click="searchDialogFormVisible = true">搜索</el-button>
+                    <el-button color="#3388BB" @click="addDialogFormVisible = true">增加</el-button>
+                    <el-button color="#3388BB" @click="searchDialogFormVisible = true">搜索</el-button>
+                    <el-button color="#3388BB" @click="preSelect()">筛选</el-button>
                 </div>
             </div>
         </template>
@@ -55,7 +56,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="addDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleAdd()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -63,22 +64,39 @@
         <el-dialog v-model="searchDialogFormVisible" title="搜索">
             <el-form :model="searchForm">
                 <el-form-item label="支行名称" label-width=100px>
-                    <el-input v-model="searchForm.bank_name" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="支行位置" label-width=100px>
-                    <el-input v-model="searchForm.bank_location" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="总资产" label-width=100px>
-                    <el-input v-model="searchForm.asset" autocomplete="off" />
+                    <el-input v-model="searchForm.bank_name" autocomplete="off" />   
                 </el-form-item>
             </el-form>
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="searchDialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="handleSearch()">确定</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSearch()">确定</el-button>
                 </span>
             </template>
         </el-dialog>
+
+         <el-dialog v-model="selectDialogFormVisible" title="筛选">
+            <el-form :model="searchForm">
+                <el-form-item label="支行位置" label-width=100px>
+                    <el-select v-model="searchForm.bank_location" >
+                        <el-option v-for="location in uniqueBankLocation" :key="location" :label="location" :value="location"></el-option>
+                    </el-select>  
+                </el-form-item>
+                <el-form-item label="总资产" label-width=100px>
+                    <el-select v-model="searchForm.asset">
+                        <el-option v-for="asset in uniqueAsset" :key="asset" :label="asset" :value="asset"></el-option>
+                    </el-select> 
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="cleanSelect()">重置</el-button>
+                    <el-button color="#3388BB" type="primary" @click="handleSelect()">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+        
 
         <el-dialog v-model="renameDialogFormVisible" title="支行改名">
             <el-form :model="nameForm">
@@ -106,8 +124,10 @@ import { ElMessage } from "element-plus";
 export default {
     setup() {
         const tableData = ref([])
+        const fullData = ref([])
         const addDialogFormVisible = ref(false);
         const searchDialogFormVisible = ref(false);
+        const selectDialogFormVisible =ref(false);
         const renameDialogFormVisible = ref(false);
         const addForm = reactive({
             bank_name: "",
@@ -123,10 +143,25 @@ export default {
             name: "",
             name_new: "",
         });
+       
         const currentPage = ref(1);
         const pageSize = ref(2);
         const count = ref(0);
         const baseurl = "/subBank";
+        const uniqueBankLocation =ref([]);
+        const uniqueAsset =ref([]);
+        
+        const initData = () =>{
+             request({ url: baseurl + "/page", method: "post", params: { page: 1, size: 1000 }, data: searchForm }).then(res => {
+                if (res.data.code == 200) {
+                    fullData.value =res.data.data.data;
+                } else {
+                    ElMessage.error(res.data.code + "：" + res.data.message);
+                }
+            }).catch(err => {
+                ElMessage.error(err);
+            });
+        }
 
         const load = () => {
             request({ url: baseurl + "/page", method: "post", params: { page: currentPage.value, size: pageSize.value }, data: searchForm }).then(res => {
@@ -142,8 +177,28 @@ export default {
         };
 
         onMounted(() => {
+            initData();
             load();
         });
+
+       const preSelect =() =>{
+            selectDialogFormVisible.value = true;
+            uniqueBankLocation.value= Array.from(new Set(fullData._rawValue.map(item => item.bank_location)));
+            uniqueAsset.value= Array.from(new Set(fullData._rawValue.map(item => item.asset)));
+       }
+
+        //用于筛选
+       const handleSelect =() =>{
+            load ();
+            selectDialogFormVisible.value = false;     
+       }
+
+       //重置筛选结果
+       const cleanSelect =() =>{
+            Object.keys(searchForm).forEach(key => {
+                searchForm[key] = "";
+            });
+       }
 
         const handleEdit = (data) => {
             request.post(baseurl + "/edit", data).then(res => {
@@ -159,6 +214,7 @@ export default {
             data.showmode = false;
         };
 
+
         const handleDelete = (data) => {
             request.post(baseurl + "/delete", data).then(res => {
                 load();
@@ -166,7 +222,7 @@ export default {
                     ElMessage.success(res.data.message);
                 } else {
                     ElMessage.error(res.data.code + "：" + res.data.message);
-                }
+            }
             }).catch(err => {
                 ElMessage.error(err);
             });
@@ -220,7 +276,6 @@ export default {
                 addForm[key] = "";
             });
         };
-
         const handleSearch = () => {
             load();
             searchDialogFormVisible.value = false;
@@ -228,10 +283,12 @@ export default {
                 searchForm[key] = "";
             });
         };
+
         return {
             tableData,
             addDialogFormVisible,
             searchDialogFormVisible,
+            selectDialogFormVisible,
             renameDialogFormVisible,
             addForm,
             searchForm,
@@ -239,6 +296,8 @@ export default {
             currentPage,
             pageSize,
             count,
+            uniqueBankLocation,
+            uniqueAsset,
             handleEdit,
             handleDelete,
             handleSizeChange,
@@ -247,9 +306,14 @@ export default {
             handleSearch,
             preRename,
             handleRename,
+            handleSelect,
+            cleanSelect, 
+            preSelect
+
         };
     }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -258,4 +322,7 @@ export default {
     align-items: center;
     justify-content: space-between;
 }
+
+
+
 </style>

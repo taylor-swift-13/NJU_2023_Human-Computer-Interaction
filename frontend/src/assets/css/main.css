@@ -18,6 +18,27 @@ body {
     font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
 }
 
+:root .el-pager li.is-active {
+    color: #3388BB;
+    
+}
+:root .el-input {
+    --el-input-focus-border: #3388BB;
+    --el-input-focus-border-color: #3388BB;
+}
+
+:root .el-select {
+    --el-select-input-focus-border-color: #3388BB;
+}
+
+:root .el-pagination {
+    --el-pagination-hover-color: #3388BB;
+}
+
+:root .el-select-dropdown__item.selected {
+    color: #3388BB !important ;
+}
+
 body,
 ol,
 ul,
