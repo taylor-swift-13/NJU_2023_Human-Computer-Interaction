@@ -112,10 +112,14 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted ,onBeforeUnmount,onBeforeMount} from "vue";
 import request from "@/utils/axios";
 import { reactive } from "vue";
 import { ElMessage } from "element-plus";
+import { eventBus } from '@/utils/eventBus.js';
+
+
+const bank_name = ref('');
 
 export default {
     setup() {
@@ -146,6 +150,8 @@ export default {
         const uniqueDepType = ref([]);
         const uniqueId =ref ([]);
 
+
+
         const load = () => {
             request({ url: baseurl + "/page", method: "post", params: { page: currentPage.value, size: pageSize.value }, data: searchForm }).then(res => {
                 if (res.data.code == 200) {
@@ -170,11 +176,27 @@ export default {
                 ElMessage.error(err);
             });
         }
+        
+       
+        const handleUpdate =(data)=>{
+            bank_name.value=data;     
+        }
 
-        onMounted(() => {
-            initData();
-            load();
+         onBeforeMount(async()=>{
+         eventBus.on('updateSearchForm', handleUpdate);
+         if(bank_name.value!=null){searchForm.bank_name=bank_name.value;}
         });
+
+      
+
+         onMounted(async () => {
+            initData();
+            if(bank_name.value!=null){searchForm.bank_name=bank_name.value;} 
+            load();  
+        });
+
+     
+     
 
         const handleEdit = (data) => {
             request.post(baseurl + "/edit", data).then(res => {
@@ -256,6 +278,10 @@ export default {
                 searchForm[key] = "";
             });
         };
+
+        onBeforeUnmount(() => {
+           bank_name.value='';
+        });
         return {
             tableData,
             addDialogFormVisible,
@@ -263,6 +289,7 @@ export default {
             selectDialogFormVisible,
             addForm,
             searchForm,
+            bank_name,
             currentPage,
             pageSize,
             count,
@@ -277,7 +304,8 @@ export default {
             handleSearch,
             handleSelect,
             preSelect,
-            cleanSelect
+            cleanSelect,
+            handleUpdate
         };
     }
 }

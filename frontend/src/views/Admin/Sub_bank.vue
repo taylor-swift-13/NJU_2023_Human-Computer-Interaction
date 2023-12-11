@@ -26,11 +26,21 @@
                     <p v-show="!scope.row.showmode">{{ scope.row.asset }}</p>
                 </template>
             </el-table-column>
-            <el-table-column label="操作">
-                <template #default="scope">
+            <el-table-column label="操作" width="350">
+                <template #default="scope" >
                     <el-button @click="scope.row.showmode = true" type='primary' size="small">编辑</el-button>
                     <el-button @click="handleEdit(scope.row)" type='success' size="small">保存</el-button>
                     <el-button @click="preRename(scope.row)" type='info' size="small">改名</el-button>
+                     <router-link to="/department/department" class="link">
+                        <el-button @click="updateSerachForm(scope.row.bank_name)"  size="small">
+                             部门
+                        </el-button>
+                     </router-link>
+                      <router-link to="/department/member" class="link">
+                        <el-button @click="updateSerachForm(scope.row.bank_name)"  size="small">
+                            员工
+                        </el-button>
+                     </router-link>
                 </template>
             </el-table-column>
         </el-table>
@@ -121,6 +131,10 @@ import request from "@/utils/axios";
 import { reactive } from "vue";
 import { ElMessage } from "element-plus";
 
+import { eventBus } from '@/utils/eventBus.js';
+
+
+
 export default {
     setup() {
         const tableData = ref([])
@@ -143,7 +157,7 @@ export default {
             name: "",
             name_new: "",
         });
-       
+
         const currentPage = ref(1);
         const pageSize = ref(2);
         const count = ref(0);
@@ -179,6 +193,7 @@ export default {
         onMounted(() => {
             initData();
             load();
+
         });
 
        const preSelect =() =>{
@@ -228,6 +243,8 @@ export default {
             });
         };
 
+    
+
         const preRename = (data) => {
             nameForm.name = data.bank_name;
             renameDialogFormVisible.value = true;
@@ -249,6 +266,11 @@ export default {
                 nameForm[key] = "";
             });
         }
+
+        const updateSerachForm = (data) => {
+            eventBus.emit('updateSearchForm', data);
+        };
+
 
         const handleSizeChange = (number) => {
             pageSize.value = number;
@@ -284,6 +306,7 @@ export default {
             });
         };
 
+
         return {
             tableData,
             addDialogFormVisible,
@@ -308,7 +331,8 @@ export default {
             handleRename,
             handleSelect,
             cleanSelect, 
-            preSelect
+            preSelect,
+            updateSerachForm
 
         };
     }
@@ -321,6 +345,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+.link{
+   padding-left:10px;
 }
 
 

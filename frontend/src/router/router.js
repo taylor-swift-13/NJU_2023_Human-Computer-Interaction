@@ -94,6 +94,7 @@ const routes = [
         component: Layout,
         children: [...layoutMap]
     }
+
 ];
 
 export { routes, layoutMap };
