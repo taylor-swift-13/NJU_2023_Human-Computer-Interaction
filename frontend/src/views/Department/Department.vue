@@ -112,14 +112,16 @@
 </template>
 
 <script>
-import { ref, onMounted ,onBeforeUnmount,onBeforeMount} from "vue";
+import { ref, onMounted ,onUnmounted} from "vue";
 import request from "@/utils/axios";
 import { reactive } from "vue";
 import { ElMessage } from "element-plus";
 import { eventBus } from '@/utils/eventBus.js';
 
-
 const bank_name = ref('');
+const handleUpdate =(data)=>{ bank_name.value=data;  }
+eventBus.on('updateSearchForm', handleUpdate);
+if(bank_name.value!=''){searchForm.bank_name=bank_name.value;} 
 
 export default {
     setup() {
@@ -151,7 +153,6 @@ export default {
         const uniqueId =ref ([]);
 
 
-
         const load = () => {
             request({ url: baseurl + "/page", method: "post", params: { page: currentPage.value, size: pageSize.value }, data: searchForm }).then(res => {
                 if (res.data.code == 200) {
@@ -178,24 +179,15 @@ export default {
         }
         
        
-        const handleUpdate =(data)=>{
-            bank_name.value=data;     
-        }
-
-         onBeforeMount(async()=>{
-         eventBus.on('updateSearchForm', handleUpdate);
-         if(bank_name.value!=null){searchForm.bank_name=bank_name.value;}
-        });
-
       
 
-         onMounted(async () => {
+
+         onMounted(() => {
             initData();
-            if(bank_name.value!=null){searchForm.bank_name=bank_name.value;} 
+            if(bank_name.value!=''){searchForm.bank_name=bank_name.value;}  
             load();  
         });
 
-     
      
 
         const handleEdit = (data) => {
@@ -279,7 +271,7 @@ export default {
             });
         };
 
-        onBeforeUnmount(() => {
+        onUnmounted(() => {
            bank_name.value='';
         });
         return {

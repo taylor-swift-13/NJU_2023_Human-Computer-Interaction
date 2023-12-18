@@ -171,13 +171,16 @@
 </template>
 
 <script>
-import { ref, onMounted,onBeforeUnmount,onBeforeMount} from "vue";
+import { ref, onMounted,onBeforeUnmount} from "vue";
 import request from "@/utils/axios";
 import { reactive } from "vue";
 import { ElMessage } from "element-plus";
 import { eventBus } from '@/utils/eventBus.js';
 
 const bank_name =ref('');
+const handleUpdate =(data)=>{ bank_name.value=data;  }
+eventBus.on('updateSearchForm', handleUpdate);
+if(bank_name.value!=''){searchForm.bank_name=bank_name.value;}  
 
 
 export default {
@@ -269,19 +272,12 @@ export default {
             });
         }
 
-      
-       const handleUpdate =(data)=>{
-            bank_name.value=data;     
-        }
 
-        onBeforeMount(async()=>{
-         eventBus.on('updateSearchForm', handleUpdate);
-         if(bank_name.value!=null){searchForm.bank_name=bank_name.value;}
-        });
+       console.log("bank_name"+bank_name.value)
 
-         onMounted(async() => {
+         onMounted(() => {
             initData();
-            if(bank_name.value!=null){searchForm.bank_name=bank_name.value;}
+            if(bank_name.value!=''){searchForm.bank_name=bank_name.value;}  
             load();
         });
         

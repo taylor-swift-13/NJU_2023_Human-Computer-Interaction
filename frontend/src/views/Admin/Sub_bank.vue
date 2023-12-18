@@ -194,6 +194,17 @@ export default {
             initData();
             load();
 
+
+            import('@/views/department/department.vue').then(({default:dep}) => {
+                const handleUpdate =(data)=>{ dep.bank_name=data;  }
+                eventBus.on('updateSearchForm', handleUpdate);
+          });
+
+            import('@/views/department/member.vue').then(({default:mem}) => {
+                const handleUpdate =(data)=>{ mem.bank_name=data;  }
+                eventBus.on('updateSearchForm', handleUpdate);
+          });
+
         });
 
        const preSelect =() =>{
