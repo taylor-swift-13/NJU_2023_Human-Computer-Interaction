@@ -2,6 +2,8 @@ package com.example.backend.controller;
 
 import com.example.backend.common.Response;
 import com.example.backend.entity.Member;
+import com.example.backend.entity.MemberLog;
+import com.example.backend.service.MemberLogService;
 import com.example.backend.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/member")
 public class MemberController {
     final MemberService memberService;
+    final MemberLogService memberLogService;
 
     @Autowired
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService,MemberLogService memberLogService) {
+        this.memberLogService=memberLogService;
         this.memberService = memberService;
     }
 
@@ -35,4 +39,15 @@ public class MemberController {
     public Response page(@RequestParam Integer page, @RequestParam Integer size, @RequestBody Member member) {
         return memberService.page(page, size, member);
     }
+
+    @PostMapping("/addlog")
+    public Response addLog(@RequestBody MemberLog memberLog) {
+        return memberLogService.insert(memberLog);
+    }
+
+    @PostMapping("/pagelog")
+    public Response pageLog() {
+        return memberLogService.page();
+    }
+
 }

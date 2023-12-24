@@ -2,6 +2,8 @@ package com.example.backend.entity;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class SavingAccount {
     private Integer account_id;
@@ -10,5 +12,5 @@ public class SavingAccount {
     private String password;
     private Integer remaining;
     private String open_date;
-    private Float interest_rate;
+    private BigDecimal interest_rate;
 }

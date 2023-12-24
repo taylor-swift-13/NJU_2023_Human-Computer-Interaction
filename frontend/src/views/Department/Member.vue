@@ -7,6 +7,7 @@
                     <el-button color="#3388BB" @click="addDialogFormVisible = true">增加</el-button>
                     <el-button color="#3388BB" @click="searchDialogFormVisible = true">搜索</el-button>
                     <el-button color="#3388BB" @click="preSelect()">筛选</el-button>
+                      <el-button class="vice_button" @click="toggleTable()">{{ showTable ? '隐藏操作历史' : '显示操作历史' }}</el-button>
                 </div>
             </div>
         </template>
@@ -67,18 +68,63 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="200">
                 <template #default="scope">
-                    <el-button @click="scope.row.showmode = true" type='primary' size="small">编辑</el-button>
+                    <el-button @click="preEdit(scope.row)" type='primary' size="small">编辑</el-button>
                     <el-button @click="handleEdit(scope.row)" type='success' size="small">保存</el-button>
                     <el-button @click="handleDelete(scope.row)" type='danger' size="small">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
 
+   
         <div style="padding: 10px 0">
             <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[2, 4, 10, 20]"
                 layout="total, sizes, prev, pager, next, jumper" :total="count" @size-change="handleSizeChange"
                 @current-change="handleCurrentChange" />
         </div>
+
+             
+    <el-table v-if="showTable" :data="logData" :default-sort="{ prop: 'operation_time', order: 'descending' }" stripe style="width: 100%">
+      <!-- Regular columns -->
+      <el-table-column prop="operation_time" label="操作时间"></el-table-column>
+      <el-table-column prop="type" label="操作类型"></el-table-column>
+      <el-table-column prop="id" label="ID"></el-table-column>
+      <el-table-column prop="sex" label="性别"></el-table-column>
+      <el-table-column prop="person_id" label="身份证号"></el-table-column>
+      <el-table-column prop="begin_date" label="入职时间"></el-table-column>
+      <!-- Add other regular columns as needed -->
+
+      <!-- Expandable content -->
+      <el-table-column label="详细信息" width="200">
+        <template #default="scope">
+          <el-button class="span_button" size="mini" @click="handleExpand(scope.row)" type="text">
+            {{ expandedRows.includes(scope.row)? '收起' : '展开' }}
+          </el-button>
+          <el-collapse-transition>
+           <div v-show="expandedRows.includes(scope.row)">
+            <!-- Add detailed information here -->
+            <p>depart no: {{ scope.row.depart_no }}</p>
+            <p>pre depart no: {{ scope.row.pre_depart_no }}</p>
+            <p>dep depart no: {{ scope.row.dep_depart_no }}</p>
+            <p>pre dep depart no: {{ scope.row.pre_dep_depart_no }}</p>
+            <p>bank name: {{ scope.row.bank_name }}</p>
+            <p>pre bank name: {{ scope.row.pre_bank_name }}</p>
+            <p>name: {{ scope.row.name }}</p>
+            <p>pre name: {{ scope.row.pre_name }}</p>
+            <p>phone: {{ scope.row.phone }}</p>
+            <p>pre phone: {{ scope.row.pre_phone }}</p>
+            <p>address: {{ scope.row.address }}</p>
+            <p>pre address: {{ scope.row.pre_address }}</p>
+            <p>salary: {{ scope.row.salary }}</p>
+            <p>pre salary: {{ scope.row.pre_salary }}</p>
+            <p>level: {{ scope.row.level }}</p>
+            <p>pre level: {{ scope.row.pre_level }}</p>
+            <!-- Add other detailed information as needed -->
+          </div>
+          </el-collapse-transition>
+        </template>
+      </el-table-column>
+    </el-table>
+
 
         <el-dialog v-model="addDialogFormVisible" title="增加">
             <el-form :model="addForm">
@@ -186,6 +232,7 @@ if(bank_name.value!=''){searchForm.bank_name=bank_name.value;}
 export default {
     setup() {
         const tableData = ref([]);
+        const logData =ref([]);
         const fullData =ref([]);
         const addDialogFormVisible = ref(false);
         const searchDialogFormVisible = ref(false);
@@ -218,22 +265,32 @@ export default {
             begin_date: "",
             level: "",
         });
-        const editForm = reactive({
+        
+         const logForm =reactive({
+            operation_time:"",
+            type:"",
             id: "",
+            sex: "",
+            person_id: "",
+            begin_date:"",
             depart_no: "",
-            depart_no_new: "",
+            pre_depart_no: "",
             dep_depart_no: "",
-            dep_depart_no_new: "",
+            pre_dep_depart_no: "",
             bank_name: "",
-            bank_name_new: "",
-            name_new: "",
-            phone_new: "",
-            address_new: "",
+            pre_bank_name: "",
+            name:"",
+            pre_name: "",
+            phone: "",
+            pre_phone:"",
+            address: "",
+            pre_address:"",
             salary: "",
-            salary_new: "",
+            pre_salary: "",
             level: "",
-            level_new: "",
-        });
+            pre_level: "",
+        
+        })
         const currentPage = ref(1);
         const pageSize = ref(2);
         const count = ref(0);
@@ -244,8 +301,25 @@ export default {
         const uniqueDDepNo =ref([]);
         const uniqueBankName =ref([]);
         const uniqueSex =ref([]);
+        const expandedRows = ref([]);
+        const showTable= ref([false]);
+        const originalData =ref([]); 
         
+        const loadLog =() =>{
+           request({ url: baseurl + "/pagelog", method: "post" }).then(res => {
+                if (res.data.code == 200) {
+                    console.log("AAAA");
+                    console.log(res);
+                    logData.value =res.data.data.data;
+                    console.log(logData);
+                } else {
+                    ElMessage.error(res.data.code + "：" + res.data.message);
+                }
+            }).catch(err => {
+                ElMessage.error(err);
+            });
 
+       }
 
         const load = () => {
             request({ url: baseurl + "/page", method: "post", params: { page: currentPage.value, size: pageSize.value }, data: searchForm }).then(res => {
@@ -273,21 +347,60 @@ export default {
         }
 
 
-       console.log("bank_name"+bank_name.value)
-
          onMounted(() => {
+            loadLog();
             initData();
             if(bank_name.value!=''){searchForm.bank_name=bank_name.value;}  
             load();
         });
         
-    
-         
+       const preEdit = (data) =>{
+          data.showmode = true;
+          // Deep copy originalData
+          originalData.value = JSON.parse(JSON.stringify(tableData.value.find(row => row.id === data.id)));
+       }
+       const handleAddLog = () =>{
+             console.log(logForm);
+             request.post(baseurl + "/addlog", logForm).then(res => {
+
+                loadLog();
+
+                if (res.data.code == 200) {
+                    console.log(res.data.message);
+                } else {
+                    ElMessage.error(res.data.code + "：" + res.data.message);
+                }
+                 Object.keys(logForm).forEach(key => {
+                        logForm[key] = "";
+                });
+                
+            }).catch(err => {
+                ElMessage.error(err);
+            });
+        }
 
         const handleEdit = (data) => {
             request.post(baseurl + "/edit", data).then(res => {
                 load();
                 if (res.data.code == 200) {
+                    
+                    const updatedData = { ...data };
+                    const propertyNames = ['operation_time','type', 'id', 'sex','person_id','begin_date','depart_no','pre_depart_no','dep_depart_no','pre_dep_depart_no','bank_name','pre_bank_name','name',
+                    'pre_name','phone','pre_phone','address','pre_address','salary','pre_salary','level','pre_level'];
+
+                    for (const propertyName of propertyNames) {
+                        logForm[propertyName] = updatedData[propertyName];
+
+                        // 如果是 pre_ 开头的属性，从 originalData 中取值
+                        if (propertyName.startsWith('pre_')) {
+                            const originalPropertyName = propertyName.replace('pre_', '');
+                            logForm[propertyName] = originalData.value[originalPropertyName];
+                        }
+                    }
+                    logForm.operation_time= new Date().toLocaleString();
+                    logForm.type ="Edit";
+                    handleAddLog();
+
                     ElMessage.success(res.data.message);
                 } else {
                     ElMessage.error(res.data.code + "：" + res.data.message);
@@ -302,6 +415,15 @@ export default {
             request.post(baseurl + "/delete", data).then(res => {
                 load();
                 if (res.data.code == 200) {
+
+                     for (const key in data) {
+                        logForm[key] = data[key];
+                    }
+
+                    logForm.operation_time= new Date().toLocaleString();
+                    logForm.type ="Delete";
+                    handleAddLog();
+
                     ElMessage.success(res.data.message);
                 } else {
                     ElMessage.error(res.data.code + "：" + res.data.message);
@@ -325,6 +447,13 @@ export default {
             request.post(baseurl + "/add", addForm).then(res => {
                 load();
                 if (res.data.code == 200) {
+                    for (const key in addForm) {
+                        logForm[key] = addForm[key];
+                    }
+                    logForm.operation_time= new Date().toLocaleString();
+                    logForm.type ="Add";
+                    handleAddLog();
+
                     ElMessage.success(res.data.message);
                 } else {
                     ElMessage.error(res.data.code + "：" + res.data.message);
@@ -370,14 +499,30 @@ export default {
          onBeforeUnmount(() => {
            bank_name.value='';
          });
+
+          const handleExpand = (row) => {
+      // 使用 ref 提供的 .value 属性来访问和修改值
+      const index = expandedRows.value.indexOf(row);
+      if (index === -1) {
+        // 如果行不在数组中，添加它
+        expandedRows.value.push(row);
+      } else {
+        // 如果行在数组中，从数组中移除它
+        expandedRows.value.splice(index, 1);
+      }
+    };
+
+    const toggleTable =() => {
+      showTable.value = !showTable.value;
+    };
         return {
             tableData,
+            logData,
             addDialogFormVisible,
             searchDialogFormVisible,
             selectDialogFormVisible,
             addForm,
             searchForm,
-            editForm,
             currentPage,
             pageSize,
             count,
@@ -386,6 +531,8 @@ export default {
             uniqueDepNo,
             uniqueLevel,
             uniqueSex,
+            expandedRows,
+            showTable,
             handleEdit,
             handleDelete,
             handleSizeChange,
@@ -395,7 +542,10 @@ export default {
             handleSelect,
             preSelect,
             cleanSelect,
-            handleUpdate
+            handleUpdate,
+            preEdit,
+            handleExpand,
+            toggleTable
         };
     }
 }
@@ -407,4 +557,18 @@ export default {
     align-items: center;
     justify-content: space-between;
 }
+
+.vice_button{
+   color: #fff ;
+   background-color: #77BBDD;
+}
+
+.vice_button:hover{
+   color: #fff ;
+   background-color: #88BBDD;
+}
+.span_button{
+    color: #3388BB
+}
+
 </style>

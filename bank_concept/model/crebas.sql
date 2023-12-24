@@ -30,6 +30,20 @@ create table department
    constraint PK_DEPARTMENT primary key (depart_no)
 );
 
+create table department_log (
+    operation_time     timestamp,
+    type               varchar(255),
+    depart_no          integer,
+    id                 integer,
+    bank_name          varchar(255),
+    depart_name        varchar(255),
+    pre_depart_name    varchar(255),
+    depart_type        varchar(255),
+    pre_depart_type    varchar(255),
+    primary key (operation_time) ,
+    constraint fk_department_log_department foreign key (id) references department(id)
+);
+
 create table loan 
 (
    loan_id              integer                        not null,
@@ -59,6 +73,35 @@ create table member
    constraint PK_MEMBER primary key (id)
 );
 
+create table member_log (
+    operation_time   timestamp,
+    type             varchar(255),
+    id               integer,
+    sex              char(1),
+    person_id        char(18),
+    begin_date       date,
+    depart_no        integer,
+    pre_depart_no    integer,
+    dep_depart_no    integer not null,
+    pre_dep_depart_no integer,
+    bank_name        char(30) not null,
+    pre_bank_name     char(30),
+    name             char(30),
+    pre_name         char(30),
+    phone            char(11),
+    pre_phone        char(11),
+    address          char(30),
+    pre_address      char(30),
+    salary           integer,
+    pre_salary       integer,
+    level            integer,
+    pre_level        integer,
+    primary key (operation_time),
+    constraint fk_member_log_member foreign key (id) references member (id)
+);
+
+
+
 create table pay_status 
 (
    pay_id               char(30)                       not null,
@@ -87,6 +130,8 @@ create table sub_bank
    asset                integer                        not null,
    constraint PK_SUB_BANK primary key (bank_name)
 );
+
+
 
 alter table credit_account
    add constraint FK_CREDIT_A_OPEN_SUB_BANK foreign key (bank_name)
