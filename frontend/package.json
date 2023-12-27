@@ -12,11 +12,14 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
     "axios": "^1.4.0",
+    "chart.js": "^4.4.1",
     "element-plus": "^2.3.4",
     "mockjs": "^1.1.0",
     "nprogress": "^0.2.0",
     "screenfull": "^6.0.2",
     "vue": "^3.3.2",
+    "vue-chartjs": "^5.3.0",
+    "vue-echarts": "^6.6.7",
     "vue-router": "^4.2.0",
     "vuex": "^4.1.0"
   },
