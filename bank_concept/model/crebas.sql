@@ -2,7 +2,7 @@ create table client
 (
    client_id            char(18)                       not null,
    real_name            char(30)                       null,
-   client_phone         char(11)                       null,
+   client_phone         char(20)                       null,
    client_address       char(30)                       null,
    client_email         char(30)                       null,
    constraint PK_CLIENT primary key (client_id)
@@ -65,7 +65,7 @@ create table member
    name                 char(30)                       null,
    sex                  char(1)                        null,
    person_id            char(18)                       null,
-   phone                char(11)                       null,
+   phone                char(20)                       null,
    address              char(30)                       null,
    salary               integer                        null,
    begin_date           date                           null,
@@ -88,8 +88,8 @@ create table member_log (
     pre_bank_name     char(30),
     name             char(30),
     pre_name         char(30),
-    phone            char(11),
-    pre_phone        char(11),
+    phone            char(20),
+    pre_phone        char(20),
     address          char(30),
     pre_address      char(30),
     salary           integer,

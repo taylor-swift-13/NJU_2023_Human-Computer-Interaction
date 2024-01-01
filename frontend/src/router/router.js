@@ -18,7 +18,7 @@ const layoutMap = [
         path: "department",
         name: "Department",
         component: RouteView,
-        meta: { title: "部门管理", icon: "Document" },
+        meta: { title: "部门管理", icon: "Document" ,roles: ["admin"]},
         children: [
             {
                 path: "department",
