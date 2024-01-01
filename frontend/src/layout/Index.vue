@@ -22,7 +22,7 @@ import Header from "./Header.vue";
 import { ref, onMounted } from "vue";
 
 export default {
-    components: { Aside, Header },
+    components: { Aside, Header},
     setup() {
         let year = ref(null);
 
