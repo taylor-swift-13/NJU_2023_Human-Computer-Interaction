@@ -361,10 +361,11 @@ export default {
        }
        const handleAddLog = () =>{
              console.log(logForm);
+             console.log(logForm.begin_date);
              request.post(baseurl + "/addlog", logForm).then(res => {
 
                 loadLog();
-
+                
                 if (res.data.code == 200) {
                     console.log(res.data.message);
                 } else {
@@ -373,6 +374,10 @@ export default {
                  Object.keys(logForm).forEach(key => {
                         logForm[key] = "";
                 });
+
+                 Object.keys(addForm).forEach(key => {
+                addForm[key] = "";
+            });
                 
             }).catch(err => {
                 ElMessage.error(err);
@@ -443,6 +448,13 @@ export default {
             load();
         };
 
+        const getCurrentFormattedDate = () =>{
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+        };
         const handleAdd = () => {
             request.post(baseurl + "/add", addForm).then(res => {
                 load();
@@ -450,21 +462,28 @@ export default {
                     for (const key in addForm) {
                         logForm[key] = addForm[key];
                     }
+                  
+                    logForm.begin_date=getCurrentFormattedDate();
                     logForm.operation_time= new Date().toLocaleString();
                     logForm.type ="Add";
+                    
                     handleAddLog();
 
                     ElMessage.success(res.data.message);
                 } else {
                     ElMessage.error(res.data.code + "：" + res.data.message);
+                     Object.keys(addForm).forEach(key => {
+                        addForm[key] = "";
+                    });
                 }
             }).catch(err => {
                 ElMessage.error(err);
-            });
-            addDialogFormVisible.value = false;
-            Object.keys(addForm).forEach(key => {
+                 Object.keys(addForm).forEach(key => {
                 addForm[key] = "";
             });
+            });
+            addDialogFormVisible.value = false;
+           
         };
         const preSelect =() =>{
             selectDialogFormVisible.value = true;

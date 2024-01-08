@@ -195,12 +195,12 @@ export default {
             load();
 
 
-            import('@/views/Department/Department.vue').then(({default:dep}) => {
+            import('@/views/department/department.vue').then(({default:dep}) => {
                 const handleUpdate =(data)=>{ dep.bank_name=data;  }
                 eventBus.on('updateSearchForm', handleUpdate);
           });
 
-            import('@/views/Department/Member.vue').then(({default:mem}) => {
+            import('@/views/department/member.vue').then(({default:mem}) => {
                 const handleUpdate =(data)=>{ mem.bank_name=data;  }
                 eventBus.on('updateSearchForm', handleUpdate);
           });

@@ -8,6 +8,13 @@ create table client
    constraint PK_CLIENT primary key (client_id)
 );
 
+CREATE table user
+(  
+   name            char(20)                       not null,
+   password        char(20)                       not null,
+   constraint pk_user primary key (name)
+) ;
+
 create table credit_account 
 (
    account_id           integer                        not null,
@@ -40,8 +47,7 @@ create table department_log (
     pre_depart_name    varchar(255),
     depart_type        varchar(255),
     pre_depart_type    varchar(255),
-    primary key (operation_time) ,
-    constraint fk_department_log_department foreign key (id) references department(id)
+    primary key (operation_time) 
 );
 
 create table loan 
@@ -82,9 +88,9 @@ create table member_log (
     begin_date       date,
     depart_no        integer,
     pre_depart_no    integer,
-    dep_depart_no    integer not null,
+    dep_depart_no    integer,
     pre_dep_depart_no integer,
-    bank_name        char(30) not null,
+    bank_name        char(30) ,
     pre_bank_name     char(30),
     name             char(30),
     pre_name         char(30),
@@ -96,8 +102,7 @@ create table member_log (
     pre_salary       integer,
     level            integer,
     pre_level        integer,
-    primary key (operation_time),
-    constraint fk_member_log_member foreign key (id) references member (id)
+    primary key (operation_time)
 );
 
 
