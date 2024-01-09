@@ -6,6 +6,9 @@ INSERT INTO bank.sub_bank (bank_name, bank_location, asset) VALUES ('浙江支�
 
 INSERT INTO bank.sub_bank (bank_name, bank_location, asset) VALUES ('辽宁支行', '沈阳', 20033000);
 
+INSERT INTO bank.user (id, password) VALUES ('admin', '123456');
+INSERT INTO bank.user (id, password) VALUES ('user', '111111');
+
 
 
 INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (1, 1, '南京支行', '服务部门', '服务');
@@ -14,13 +17,13 @@ INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type)
 INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (4, 4, '北京支行', '记账部门', '记账');
 
 INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (5, 5, '上海支行', '风险部门', '风险监控');
-INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (6, 6, '上海支行', '基金部门', '管理基金');
+INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (6, 5, '上海支行', '基金部门', '管理基金');
 
-INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (7, 7, '上海支行', '记账部门', '记账');
-INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (8, 8, '浙江支行', '服务部门', '服务');
+INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (7, 5, '上海支行', '记账部门', '记账');
+INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (8, 6, '浙江支行', '服务部门', '服务');
 
-INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (9, 9, '浙江支行', '股票部门', '股票管理');
-INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (10, 10, '辽宁支行', '记账部门', '记账');
+INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (9, 6, '浙江支行', '股票部门', '股票管理');
+INSERT INTO bank.department (depart_no, id, bank_name, depart_name, depart_type) VALUES (10, 7, '辽宁支行', '记账部门', '记账');
 
 
 
@@ -28,10 +31,9 @@ INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, per
 INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (2, 2, 2, '南京支行', '王华', 'W', '100000000000000000', '20000000000', 'ac 4-5-607', 100000, '2018-01-01', 8);
 INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (3, 3, 3, '北京支行', 'jack', 'W', '200000000000000000', '12300000001', 'No22.Hankou road', 900000, '2018-07-01', 7);
 INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (4, 4, 4, '北京支行', 'bob', 'M', '200000000000000001', '12300000002', 'No 21.Hankou road', 900000, '2018-08-01', 7);
-
-INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (8, 5, 5, '上海支行', 'speed', 'M', '100000003560000001', '8726963', '123 Main Street', 100000, '2019-01-01', 9);
-INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (28, 8, 8, '浙江支行', '李越', 'W', '123450000000000000', '20000000000', '345 Cherry Lane', 100000, '2018-01-05', 5);
-INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (76, 10, 10, '辽宁支行', '赵四', 'W', '200000000000000000', '12300000001', '沈阳大街12号', 900000, '2015-07-01', 6);
+INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (5, 5, 5, '上海支行', 'speed', 'M', '100000003560000001', '8726963', '123 Main Street', 100000, '2019-01-01', 9);
+INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (6, 6, 6, '浙江支行', '李越', 'W', '123450000000000000', '20000000000', '345 Cherry Lane', 100000, '2018-01-05', 5);
+INSERT INTO bank.member (id, depart_no, dep_depart_no, bank_name, name, sex, person_id, phone, address, salary, begin_date, level) VALUES (7, 7, 7, '辽宁支行', '赵四', 'W', '200000000000000000', '12300000001', '沈阳大街12号', 900000, '2015-07-01', 6);
 
 
 
